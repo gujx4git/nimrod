@@ -1,0 +1,212 @@
+package com.gioov.nimrod.system.service.impl;
+
+import com.gioov.common.mybatis.Pageable;
+import com.gioov.common.mybatis.Sort;
+import com.gioov.common.util.DateUtil;
+import com.gioov.nimrod.common.constant.DictionaryConstant;
+import com.gioov.nimrod.common.easyui.Pagination;
+import com.gioov.nimrod.common.mail.common.MailQueue;
+import com.gioov.nimrod.common.mail.entity.MailEntity;
+import com.gioov.nimrod.common.mail.mapper.MailMapper;
+import com.gioov.nimrod.system.service.DictionaryService;
+import com.gioov.nimrod.common.mail.service.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+/**
+ * @author godcheese
+ * @date 2018/2/22
+ */
+@Service
+public class MailServiceImpl implements MailService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
+
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private MailMapper mailMapper;
+
+    private JavaMailSenderImpl javaMailSender;
+
+    public void initialize() {
+        javaMailSender = new JavaMailSenderImpl();
+        String host = (String) dictionaryService.get("MAIL", "HOST");
+        if (host != null) {
+            javaMailSender.setHost(host);
+        }
+        String protocol = (String) dictionaryService.get("MAIL", "PROTOCOL");
+        if (protocol != null) {
+            javaMailSender.setProtocol(protocol);
+        }
+        String port = (String) dictionaryService.get("MAIL", "PORT");
+        if (port != null) {
+            javaMailSender.setPort(Integer.valueOf(port));
+        }
+        String username = (String) dictionaryService.get("MAIL", "USERNAME");
+        if (username != null) {
+            javaMailSender.setUsername(username);
+        }
+        String password = (String) dictionaryService.get("MAIL", "PASSWORD");
+        if (password != null) {
+            javaMailSender.setPassword(password);
+        }
+        String defaultEncoding = (String) dictionaryService.get("MAIL", "DEFAULT_ENCODING");
+        if (password != null) {
+            javaMailSender.setPassword(password);
+        }
+        javaMailSender.setDefaultEncoding(defaultEncoding);
+
+        Properties properties = new Properties();
+        String smtpAuth = (String) dictionaryService.get("MAIL", "SMTP_AUTH");
+        if (smtpAuth != null) {
+            properties.setProperty("mail.smtp.auth", smtpAuth);
+        }
+        String startTlsEnable = (String) dictionaryService.get("MAIL", "STARTTLS_ENABLE");
+        if (startTlsEnable != null) {
+            properties.setProperty("mail.starttls.enable", startTlsEnable);
+        }
+        String startTlsRequired = (String) dictionaryService.get("MAIL", "STARTTLS_REQUIRED");
+        if (startTlsRequired != null) {
+            properties.setProperty("mail.starttls.required", startTlsRequired);
+        }
+        javaMailSender.setJavaMailProperties(properties);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public void addQueue(MailEntity mailEntity) {
+        mailEntity.setStatus(DictionaryConstant.SmsStatus.WAIT);
+        setFrom(mailEntity);
+        if (insertOne(mailEntity) != null) {
+            try {
+                MailQueue.getMailQueue().produce(mailEntity);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setFrom(MailEntity mailEntity) {
+        String from = mailEntity.getFrom();
+        if (from == null) {
+            from = (String) dictionaryService.get("MAIL", "FROM");
+            if (from != null) {
+                mailEntity.setFrom(from);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public void send(MailEntity mailEntity) {
+        MailEntity mailEntity1 = mailMapper.getOne(mailEntity.getId());
+        LOGGER.info("send ...");
+        if (mailEntity1 != null) {
+            if (mailEntity1.getStatus() != DictionaryConstant.SmsStatus.FAIL) {
+                mailEntity1.setStatus(DictionaryConstant.SmsStatus.FAIL);
+            }
+            try {
+                if (mailEntity1.getHtml() == DictionaryConstant.IsOrNot.IS) {
+                    sendMimeMailMessage(mailEntity1.getFrom(), mailEntity1.getTo(), mailEntity1.getSubject(), mailEntity1.getText(), true);
+                    if (mailEntity1.getStatus() != DictionaryConstant.SmsStatus.SUCCESS) {
+                        mailEntity1.setStatus(DictionaryConstant.SmsStatus.SUCCESS);
+                    }
+                } else {
+                    sendSimpleMailMessage(mailEntity.getFrom(), mailEntity1.getTo(), mailEntity1.getSubject(), mailEntity1.getText());
+                    if (mailEntity1.getStatus() != DictionaryConstant.SmsStatus.SUCCESS) {
+                        mailEntity1.setStatus(DictionaryConstant.SmsStatus.SUCCESS);
+                    }
+                    LOGGER.info("send end");
+                }
+                mailEntity1.setGmtModified(DateUtil.newDate());
+            } catch (Exception e) {
+                LOGGER.info("e={}", e);
+                mailEntity1.setError(e.getMessage());
+            }
+
+            mailMapper.updateOne(mailEntity1);
+        }
+    }
+
+    @Override
+    public void sendSimpleMailMessage(String from, String to, String subject, String text) {
+        initialize();
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        if (from != null) {
+            simpleMailMessage.setFrom(from);
+        }
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(text);
+        javaMailSender.send(simpleMailMessage);
+    }
+
+    @Override
+    public void sendMimeEmailMessage(String from, String to, String subject, String text, boolean html) throws MessagingException {
+        initialize();
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(to);
+        mimeMessage.setSubject(subject);
+        mimeMessageHelper.setText(text, html);
+        javaMailSender.send(mimeMessage);
+    }
+
+    @Override
+    public Pagination.Result<EmailEntity> pageAll(Integer page, Integer rows, Sort sort) {
+        List<EmailEntity> mailEntityList;
+        Pagination.Result<EmailEntity> paginationResult = new Pagination().new Result<>();
+        mailEntityList = mailMapper.pageAll(new Pageable(page, rows, sort));
+        if (mailEntityList != null) {
+            paginationResult.setRows(mailEntityList);
+        }
+        int count = mailMapper.countAll();
+        paginationResult.setTotal(count);
+        return paginationResult;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public EmailEntity insertOne(EmailEntity mailEntity) {
+        EmailEntity mailEntity1 = new EmailEntity();
+        Date date = DateUtil.newDate();
+        mailEntity1.setFrom(mailEntity.getFrom());
+        mailEntity1.setTo(mailEntity.getTo());
+        mailEntity1.setSubject(mailEntity.getSubject());
+        mailEntity1.setText(mailEntity.getText());
+        mailEntity1.setHtml(mailEntity.getHtml());
+        mailEntity1.setRemark(mailEntity.getRemark());
+        mailEntity1.setGmtModified(date);
+        mailEntity1.setGmtCreated(date);
+//        addQueue(mailEntity1);
+        mailMapper.insertOne(mailEntity1);
+        return mailEntity1;
+    }
+
+    @Override
+    public int deleteAll(List<Long> idList) {
+        return mailMapper.deleteAll(idList);
+    }
+
+    @Override
+    public MailEntity getOne(Long id) {
+        return mailMapper.getOne(id);
+    }
+
+}
