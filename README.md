@@ -3,9 +3,10 @@
 
 # Nimrod
 - Last Updated: 2018-12-21
-- 自己封装的 Java Web 平台快速开发脚手架 - Spring Boot+Spring+Spring MVC+MyBatis+Thymeleaf，遵守[阿里巴巴 Java 开发规约](https://github.com/alibaba/p3c)。
-- 严格的 RBAC （ Role-Based Access Control ，基于角色的访问控制）。
-- 模块化开发。
+- 自己封装的 Java Web 平台快速开发脚手架 - Spring Boot+Spring+Spring MVC+MyBatis+Thymeleaf，遵守[阿里巴巴 Java 开发规约](https://github.com/alibaba/p3c)；
+- 严格的 RBAC （ Role-Based Access Control ，基于角色的访问控制）；
+- 模块化开发；
+- Nimrod 开发交流群：547252502（QQ 群）；
 
 |环境  |版本|
 |:-----|---|
