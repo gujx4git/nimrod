@@ -76,7 +76,7 @@ Nimrod 是一款基于 Spring Boot 封装的 Java Web 平台快速开发脚手�
 - 部门管理 ✓
 - 工作流 ✗
 
-## Getting started 开始
+## 开始 Getting started
 
 ```bash
 # clone the project
