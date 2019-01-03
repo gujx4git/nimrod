@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="320" src="https://github.com/godcheese/test/blob/master/nimrod_banner.jpg?raw=true">
+  <img width="320" src="https://github.com/godcheese/nimrod/blob/master/nimrod_banner.jpg?raw=true">
 </p>
 <p align="center">
   <a href="https://github.com/godcheese/nimrod">
