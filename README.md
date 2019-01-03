@@ -89,7 +89,7 @@ mvn clean package
 mvn spring-boot:run
 ```
 
-This will automatically open http://localhost:8080/nimrod.
+This will open http://localhost:8080/nimrod.
 
 Refer to [Documentation](https://godcheese.github.io/nirmod/guide/essentials/deploy.html) for more information
 
