@@ -170,6 +170,7 @@
                     <include>**/*</include>
                 </includes>
             </resource>
+            
             <resource>
                 <directory>lib</directory>
                 <targetPath>../${finalName}/WEB-INF/lib</targetPath>
