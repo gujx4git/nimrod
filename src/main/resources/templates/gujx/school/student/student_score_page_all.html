@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<div th:replace="./widget/base"></div>
+</head>
+<body>
+
+	<div id="studentScoreToolbar">
+		<a
+			th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/ATTACHMENT/PAGE_ALL/UPLOAD_ONE_DIALOG'')')}"
+			href="javascript:" class="easyui-linkbutton" iconCls="fa fa-upload"
+			plain="true" onclick="studentScoreAddOneDialog();">新增</a> <a
+			th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_EDIT_DIALOG'')')}"
+			href="javascript:" class="easyui-linkbutton" iconCls="fa fa-edit"
+			plain="true" onclick="studentScoreEditDialog();">编辑</a> <a
+			th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_DELETE_ALL'')')}"
+			href="javascript:" class="easyui-linkbutton" iconCls="fa fa-close"
+			plain="true" onclick="studentScoreDeleteAll();">删除</a> <a
+			th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_DELETE_ALL'')')}"
+			href="javascript:" class="easyui-linkbutton" iconCls="fa fa-refresh"
+			plain="true" onclick="studentScoreReload();">刷新</a> <a
+			th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/DICTIONARY/PAGE_ALL/DICTIONARY_CATEGORY_EXPORT_ALL'')')}"
+			href="javascript:" class="easyui-linkbutton" iconCls="fa fa-download"
+			plain="true" onclick="studentScoreExportAll();">导出</a>
+
+	</div>
+	<table id="studentscore"></table>
+
+	<script type="text/javascript">
+		$(function() {
+			var columns = [ {
+				field : 'checkbox',
+				checkbox : true
+			}, {
+				field : 'id',
+				title : 'ID'
+			}, {
+				field : 'student_id',
+				title : '学生id'
+			}, {
+				field : 'student_name',
+				title : '学生姓名'
+			}, {
+				field : 'exam_id',
+				title : '考试名称'
+			}, {
+				field : 'exam_name',
+				title : '考试名称'
+			}, {
+				field : 'chinese_score',
+				title : '语文成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'math_score',
+				title : '数学成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'english_score',
+				title : '英语成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'politics_score',
+				title : '政治成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'physical_score',
+				title : '物理成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'chemistry_score',
+				title : '化学成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'geography_score',
+				title : '地理成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'biology_score',
+				title : '生物成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'general_score',
+				title : '综合成绩',
+				styler : function(value, row, index) {
+					if (value < 78) {
+						return 'background-color:#ffee00;color:red;';
+					} else if (value > 110) {
+						return 'background-color:red;color:white;';
+					}
+				}
+			}, {
+				field : 'total',
+				title : '总分'
+			}, {
+				field : 'gmt_created',
+				title : '创建时间'
+			} ];
+			$('#studentscore').datagrid(expressui.grid.create, {
+				title : '学生成绩管理',
+				columns : [ columns ],
+				url : '/nimrod/api/school/studentscore/page_all'
+			});
+		});
+
+		function studentScoreAddOneDialog() {
+			$('#addOneDialog').dialog(expressui.dialog.create, {
+				title : '新增学生成绩',
+				height : 400,
+				width : 820,
+				fit : true,
+				grid : {
+					type : 'datagrid',
+					selector : '#studentscore'
+				},
+				href : '/nimrod/studentScoreController/add',
+				buttons : [ {
+					text : '关闭',
+					iconCls : 'fa fa-close',
+					handler : expressui.dialog.close
+				} ]
+			});
+		}
+
+		function studentScoreEditDialog() {
+			var one = $('#studentscore').datagrid(
+					expressui.grid.getCheckedOneShowAlert);
+			if (one) {
+				$('#studentScoreEditDialog').dialog(expressui.dialog.create, {
+					title : '编辑',
+					width : 600,
+					height : 390,
+					grid : {
+						type : 'datagrid',
+						selector : '#studentscore'
+					},
+					selector : '#studentScoreEditDialog',
+					href : '/nimrod/studentScoreController/edit_dialog',
+					get : {
+						url : '/nimrod/api/school/studentscore/one/{id}',
+						method : 'get'
+					},
+					save : {
+						url : '/nimrod/api/school/studentscore/save_one',
+						method : 'post'
+					},
+					buttons : [ {
+						text : '保存',
+						iconCls : 'fa fa-save',
+						handler : expressui.dialog.save,
+						reload : [ {
+							type : 'datagrid',
+							selector : '#studentscore'
+						} ],
+						success : '保存成功'
+					}, {
+						text : '关闭',
+						iconCls : 'fa fa-close',
+						handler : expressui.dialog.close
+					} ]
+				});
+			}
+		}
+
+		function studentScoreDeleteAll() {
+			$('#studentscore').datagrid(expressui.grid.deleteRows, {
+				url : '/nimrod/api/school/studentscore/delete_all',
+				method : 'post',
+				success : '删除成功',
+				reload : {
+					type : 'datagrid',
+					selector : '#studentscore'
+				}
+			});
+		}
+
+		function studentScoreReload() {
+			expressui.grid.reload({
+				type : 'datagrid',
+				selector : '#studentscore'
+			});
+		}
+		function studentScoreExportAll() {
+			window.open('/nimrod/api/school/studentscore/export_all');
+		}
+		
+		
+	</script>
+</body>
+</html>

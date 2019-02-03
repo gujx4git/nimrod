@@ -2,13 +2,11 @@ package com.gioov.gujx.service;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import com.gioov.common.mybatis.Sort;
 import com.gioov.common.web.exception.BaseResponseException;
 import com.gioov.gujx.CurrencyEntity;
 import com.gioov.nimrod.common.easyui.Pagination;
-import com.gioov.nimrod.system.entity.ApiEntity;
+
 
 
 public interface CurrencyService  {

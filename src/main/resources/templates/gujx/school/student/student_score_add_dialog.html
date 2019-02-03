@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="./widget/base"></div>
+</head>
+<body>
+
+<div class="submit-form" id="add" style="width: 800px;margin:0">
+    <form>
+        <table class="submit-table">
+            <tr>
+                <td class="label">学生id：</td>
+                <td>
+                    <input name="student_id" class="easyui-textbox" data-options="required:true">
+                </td>
+                <td class="label">学生姓名：</td>
+                <td>
+                    <input name="student_name" class="easyui-textbox" data-options="required:true">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">考试id：</td>
+                <td>
+                    <input name="exam_id" id="exam_id"  class="easyui-combobox" >
+                </td>
+                <td class="label">考试名称：</td>
+                <td>
+                    <input name="exam_name" id="exam_name"  class="easyui-textbox" data-options="required:true">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">语文成绩：</td>
+                <td>
+                   
+                    <input name="chinese_score" type="text" class="easyui-numberbox" value="100" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+                <td class="label">数学成绩：</td>
+                <td>
+                    <input name="math_score" type="text" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">英语成绩：</td>
+                <td>
+                    <input name="english_score" type="text" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+                <td class="label">政治成绩：</td>
+                <td>
+                    <input name="politics_score" type="text" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">物理成绩：</td>
+                <td>
+                    <input name="physical_score" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+                <td class="label">化学成绩：</td>
+                <td>
+                    <input name="chemistry_score" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">地理成绩：</td>
+                <td>
+                    <input name="geography_score" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+                <td class="label">生物成绩：</td>
+                <td>
+                    <input name="biology_score" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+            </tr>
+              <tr>
+                <td class="label">综合成绩：</td>
+                <td>
+                    <input name="general_score" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                </td>
+                <td class="label">总分：</td>
+                <td>
+                    <input name="total" class="easyui-numberbox" data-options="required:true,min:0,max:120,precision:2">
+                    
+                </td>
+            </tr>
+            
+        </table>
+        <div class="submit-button">
+            <a href="javascript:expressui.form.submit({selector:'#add', url: '/nimrod/api/school/studentscore/add_one', method:'post', success: '操作成功', reset: '#add'});"
+               class="easyui-linkbutton" data-options="iconCls:'fa fa-paper-plane'">新增</a>
+            <a href="javascript:expressui.form.reset('#add')" class="easyui-linkbutton"
+               data-options="iconCls:'fa fa-refresh'">重置</a>
+        </div>
+    </form>
+</div>
+<script>
+    $(function () {
+        $('#exam_id').combobox({
+            url: Api.System.DICTIONARY + '/list_all_by_key/EXAM_TYPE',
+            valueField: 'value',
+            textField: 'valueName',
+            required: true,
+            onSelect: function(rec){
+            	$('#exam_name').textbox('setValue',rec.valueName);
+            	
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

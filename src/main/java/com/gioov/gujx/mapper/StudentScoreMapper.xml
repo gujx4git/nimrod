@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gioov.gujx.mapper.StudentScoreMapper">
+	<resultMap id="BaseResultMap" type="com.gioov.gujx.entity.StudentScoreEntity">
+		<id column="id" property="id" jdbcType="BIGINT" /> <!-- id -->
+		<result column="student_id" property="student_id" jdbcType="BIGINT" /> <!-- 学生id -->
+		<result column="student_name" property="student_name" jdbcType="VARCHAR" /> <!-- 学生姓名 -->
+		<result column="exam_id" property="exam_id" jdbcType="BIGINT" /> <!-- 考试 id -->
+		<result column="exam_name" property="exam_name" jdbcType="VARCHAR" /> <!-- 考试名称 -->
+		<result column="chinese_score" property="chinese_score"
+			jdbcType="FLOAT" /> <!-- 语文成绩 -->
+		<result column="math_score" property="math_score" jdbcType="FLOAT" /> <!-- 数学成绩 -->
+		<result column="english_score" property="english_score"
+			jdbcType="FLOAT" /> <!-- 英语成绩 -->
+		<result column="politics_score" property="politics_score"
+			jdbcType="FLOAT" /> <!-- 政治成绩 -->
+		<result column="physical_score" property="physical_score"
+			jdbcType="FLOAT" /> <!-- 物理成绩 -->
+		<result column="chemistry_score" property="chemistry_score"
+			jdbcType="FLOAT" /> <!-- 化学成绩 -->
+		<result column="geography_score" property="geography_score"
+			jdbcType="FLOAT" /> <!-- 地理成绩 -->
+		<result column="biology_score" property="biology_score"
+			jdbcType="FLOAT" /> <!-- 生物成绩 -->
+		<result column="general_score" property="general_score"
+			jdbcType="FLOAT" /> <!-- 综合成绩 -->
+		<result column="total" property="total" jdbcType="FLOAT" /> <!-- 总成绩 -->
+		<result column="gmt_created" property="gmt_created" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+	</resultMap>
+
+	<sql id="TableName">
+		`student_score`
+	</sql>
+
+	<sql id="BaseColumnList">
+		`id`,
+		`student_id`,
+		`student_name`,
+		`exam_id`,
+		`exam_name`,
+		`chinese_score`,
+		`math_score`,
+		`english_score`,
+		`politics_score`,
+		`physical_score`,
+		`chemistry_score`,
+		`geography_score`,
+		`biology_score`,
+		`general_score`,
+		`total`,
+		`gmt_created`
+	</sql>
+
+	<insert id="insertOne" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.gioov.gujx.entity.StudentScoreEntity">
+		INSERT INTO
+		<include refid="TableName" />
+		(`id`,
+		`student_id`,
+		`student_name`,
+		`exam_id`,
+		`exam_name`,
+		`chinese_score`,
+		`math_score`,
+		`english_score`,
+		`politics_score`,
+		`physical_score`,
+		`chemistry_score`,
+		`geography_score`,
+		`biology_score`,
+		`general_score`,
+		`total`,
+		`gmt_created`)
+		VALUES (#{id}, #{student_id},
+		#{student_name}, #{exam_id}, #{exam_name}, #{chinese_score},
+		#{math_score}, #{english_score}, #{politics_score}, #{physical_score},
+		#{chemistry_score}, #{geography_score}, #{biology_score},
+		#{general_score}, #{total}, #{gmt_created})
+	</insert>
+
+	<update id="updateOne" keyProperty="id"
+		parameterType="com.gioov.gujx.entity.StudentScoreEntity">
+		UPDATE
+		<include refid="TableName" />
+		SET `student_id` = #{student_id},`student_name`
+		=#{student_name},`exam_id` =#{exam_id}, `exam_name`
+		=#{exam_name},`chinese_score` =#{chinese_score},`math_score`
+		=#{math_score}, `english_score` =#{english_score},`politics_score`
+		=#{politics_score},`physical_score` =#{physical_score},
+		`chemistry_score` =#{chemistry_score},`geography_score`
+		=#{geography_score}, `biology_score` =#{biology_score},`general_score`
+		=#{general_score},`total`
+		=#{total}, `gmt_created` =#{gmt_created}
+		WHERE `id`= #{id}
+	</update>
+
+	<delete id="deleteOne" parameterType="long">
+		DELETE FROM
+		<include refid="TableName" />
+		WHERE `id` = #{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TableName" />
+		WHERE `id` IN
+		(
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+
+	<select id="getOne" resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM
+		<include refid="TableName" />
+		WHERE `id` = #{id} LIMIT 1
+	</select>
+  <select id="listAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName"/>
+    </select>
+	<select id="pageAll" resultMap="BaseResultMap"
+		parameterType="com.gioov.common.mybatis.Pageable">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM
+		<include refid="TableName" />
+		${pageable}
+	</select>
+
+	<select id="countAll" resultType="int">
+		SELECT COUNT(1) FROM
+		<include refid="TableName" />
+	</select>
+
+</mapper>
