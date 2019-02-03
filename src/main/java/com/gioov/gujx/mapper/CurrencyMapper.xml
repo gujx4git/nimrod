@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gioov.gujx.mapper.CurrencyMapper">
+	<resultMap id="BaseResultMap" type="com.gioov.gujx.CurrencyEntity">
+		<id column="id" property="id" jdbcType="BIGINT" /> <!-- id -->
+		<result column="currname" property="currname" jdbcType="VARCHAR" /> <!-- 币种名 -->
+		<result column="currcode" property="currcode" jdbcType="VARCHAR" /> <!-- 代码 -->
+	</resultMap>
+
+	<sql id="TableName">
+		`currency`
+	</sql>
+
+	<sql id="BaseColumnList">
+		`id`, `currname`, `currcode`
+	</sql>
+
+	<select id="getOne" resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM
+		<include refid="TableName" />
+		WHERE `id` = #{id} LIMIT 1
+	</select>
+	<select id="listAll" resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM
+		<include refid="TableName" />
+	</select>
+
+	<select id="pageAll" resultMap="BaseResultMap"
+		parameterType="com.gioov.common.mybatis.Pageable">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM
+		<include refid="TableName" />
+		${pageable}
+	</select>
+
+	<select id="countAll" resultType="int">
+		SELECT COUNT(1) FROM
+		<include refid="TableName" />
+	</select>
+	<delete id="deleteOne" parameterType="long">
+		DELETE FROM
+		<include refid="TableName" />
+		WHERE `id` = #{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TableName" />
+		WHERE `id` IN
+		(
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+	
+	<insert id="insertOne" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.gioov.gujx.CurrencyEntity">
+		INSERT INTO
+		<include refid="TableName" />
+		(`id`,`currname`, `currcode`)
+		VALUES (#{id},#{currname}, #{currcode})
+	</insert>
+ <update id="updateOne" keyProperty="id" 
+ parameterType="com.gioov.gujx.CurrencyEntity">
+        UPDATE
+        <include refid="TableName"/>
+        SET `currname` = #{currname}, `currcode` = #{currcode}
+        WHERE `id`= #{id}
+    </update>
+</mapper>

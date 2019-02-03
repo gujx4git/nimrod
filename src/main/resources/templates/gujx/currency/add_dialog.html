@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="./widget/base"></div>
+</head>
+<body>
+
+<div class="submit-form" id="send" style="width: 500px;margin:0">
+    <form>
+        <table class="submit-table">
+            <tr>
+                <td class="label">币种名称：</td>
+                <td>
+                    <input name="currname" class="easyui-textbox" data-options="required:true">
+                </td>
+            </tr>
+            <tr>
+                <td class="label">币种代码：</td>
+                <td>
+                    <input name="currcode" class="easyui-textbox" data-options="required:true">
+                </td>
+            </tr>
+        </table>
+        <div class="submit-button">
+            <a href="javascript:expressui.form.submit({selector:'#send', url: '/nimrod/currencyController/api/currency/add_one', method:'post', success: '操作成功', reset: '#send'});"
+               class="easyui-linkbutton" data-options="iconCls:'fa fa-paper-plane'">新增</a>
+            <a href="javascript:expressui.form.reset('#send')" class="easyui-linkbutton"
+               data-options="iconCls:'fa fa-refresh'">重置</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

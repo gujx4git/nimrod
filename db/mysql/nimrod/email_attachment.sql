@@ -7,6 +7,7 @@ CREATE TABLE `mail_attachment` (
   `id` bigint(20) unsigned AUTO_INCREMENT COMMENT 'id',
   `email_id` bigint(20) NOT NULL COMMENT '电子邮件 id',
   `attachment_id` bigint(20) NOT NULL COMMENT '附件 id',
+   PRIMARY KEY `pk_id` (`id`)
 )
   ENGINE = INNODB
   DEFAULT CHARACTER

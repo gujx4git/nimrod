@@ -42,12 +42,14 @@ public class ViewPageServiceImpl implements ViewPageService {
         Date date = new Date();
 
         String authority = viewPageEntity.getAuthority().toUpperCase();
-        viewPageEntity = viewPageMapper.getOneByAuthority(authority);
-        if (viewPageEntity != null) {
+        ViewPageEntity viewPageEntity2 = new ViewPageEntity();
+        viewPageEntity2 = viewPageMapper.getOneByAuthority(authority);
+        if (viewPageEntity2 != null) {
             throw new BaseResponseException(FailureMessage.ADD_VIEW_PAGE_AUTHORITY_FAIL);
-        }
-        viewPageEntity = new ViewPageEntity();
+        }    
+        viewPageEntity2= null;
         viewPageEntity1.setName(viewPageEntity.getName());
+        System.out.println(viewPageEntity.getName());
         viewPageEntity1.setUrl(viewPageEntity.getUrl());
         viewPageEntity1.setAuthority(authority);
         viewPageEntity1.setPageCategoryId(viewPageEntity.getPageCategoryId());

@@ -46,16 +46,16 @@ public class ApiCategoryServiceImpl implements ApiCategoryService {
     public ApiCategoryEntity insertOne(ApiCategoryEntity apiCategoryEntity) {
         Date date = new Date();
         ApiCategoryEntity apiCategoryEntity1 = new ApiCategoryEntity();
-        apiCategoryEntity.setName(apiCategoryEntity.getName());
+        apiCategoryEntity1.setName(apiCategoryEntity.getName());
         if (apiCategoryEntity.getParentId() != null) {
-            apiCategoryEntity.setParentId(apiCategoryEntity.getParentId());
+            apiCategoryEntity1.setParentId(apiCategoryEntity.getParentId());
         }
-        apiCategoryEntity.setSort(apiCategoryEntity.getSort());
-        apiCategoryEntity.setRemark(apiCategoryEntity.getRemark());
-        apiCategoryEntity.setGmtModified(date);
-        apiCategoryEntity.setGmtCreated(date);
+        apiCategoryEntity1.setSort(apiCategoryEntity.getSort());
+        apiCategoryEntity1.setRemark(apiCategoryEntity.getRemark());
+        apiCategoryEntity1.setGmtModified(date);
+        apiCategoryEntity1.setGmtCreated(date);
         apiCategoryMapper.insertOne(apiCategoryEntity1);
-        return apiCategoryEntity;
+        return apiCategoryEntity1;
     }
 
     @Override

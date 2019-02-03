@@ -1,6 +1,8 @@
 package com.gioov;
 
 import com.gioov.nimrod.common.Common;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jms.annotation.EnableJms;
 
 /**
- * @author godcheese
+ * @author gujx
  */
 @SpringBootApplication
 public class NimrodApplication {

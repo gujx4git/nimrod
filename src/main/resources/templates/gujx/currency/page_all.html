@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="./widget/base"></div>
+</head>
+<body>
+
+<div id="currencyToolbar">
+     <a th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/ATTACHMENT/PAGE_ALL/UPLOAD_ONE_DIALOG'')')}" href="javascript:" class="easyui-linkbutton" iconCls="fa fa-upload" plain="true" onclick="currencyAddOneDialog();">新增币种</a>
+
+   
+    <a th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_EDIT_DIALOG'')')}"
+       href="javascript:" class="easyui-linkbutton" iconCls="fa fa-edit" plain="true"
+       onclick="currencyEditDialog();">编辑</a>
+
+    <a th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_DELETE_ALL'')')}"
+       href="javascript:" class="easyui-linkbutton" iconCls="fa fa-close" plain="true"
+       onclick="currencyDeleteAll();">删除</a>
+       
+    <a th:if="${#authorization.expression('hasRole('''+ SYSTEM_ADMIN +''') OR hasAuthority(''/COMPONENT/SYSTEM/ATTACHMENT/PAGE_ALL/ATTACHMENT_DELETE_ALL'')')}"
+       href="javascript:" class="easyui-linkbutton" iconCls="fa fa-refresh" plain="true"
+       onclick="CurrencyReload();">刷新</a>
+</div>
+<table id="currency"></table>
+
+<script type="text/javascript">
+    $(function () {
+        var columns = [
+            {field: 'checkbox', checkbox: true},
+            {field: 'id', title: 'ID'},
+            {field: 'currname', title: '币种名称'},
+            {field: 'currcode', title: '币种代码'}
+        ];
+        $('#currency').datagrid(expressui.grid.create, {
+            title: '币种管理',
+            columns: [columns],
+            url:   'api/currency/page_all'
+        });
+    });
+
+    function currencyAddOneDialog() {   
+        $('#addOneDialog').dialog(expressui.dialog.create, {
+            title: '新增币种',
+            height:200,
+            width: 600,
+            grid: {type: 'datagrid', selector: '#currency'},
+            href: '/nimrod/currencyController/add',     
+            buttons: [{
+                text: '关闭',
+                iconCls: 'fa fa-close',
+                handler: expressui.dialog.close              
+            }]
+        });
+    }
+
+    function currencyEditDialog() {
+        var one = $('#currency').datagrid(expressui.grid.getCheckedOneShowAlert);
+        if (one) {
+            $('#currencyEditDialog').dialog(expressui.dialog.create, {
+                title: '编辑',
+                width: 600,
+                height: 390,
+                grid: {type: 'datagrid', selector: '#currency'},
+                selector: '#currencyEditDialog',
+                href: '/nimrod/currencyController/edit_dialog',
+                get: {url: '/nimrod/currencyController/api/currency/one/{id}', method: 'get'},
+                save: {url: '/nimrod/currencyController/api/currency/save_one', method: 'post'},
+                buttons: [{
+                    text: '保存',
+                    iconCls: 'fa fa-save',
+                    handler: expressui.dialog.save,
+                    reload: [{type: 'datagrid', selector: '#currency'}],
+                    success: '保存成功'
+                }, {
+                    text: '关闭',
+                    iconCls: 'fa fa-close',
+                    handler: expressui.dialog.close
+                }]
+            });
+        }
+    }
+
+    function currencyDeleteAll() {
+        $('#currency').datagrid(expressui.grid.deleteRows, {
+            url: '/nimrod/currencyController/api/currency/delete_all',
+            method: 'post',
+            success: '删除成功',
+            reload: {type: 'datagrid', selector: '#currency'}
+        });
+    }
+    
+    function CurrencyReload() {
+            expressui.grid.reload({type: 'datagrid', selector: '#currency'})
+    }
+
+
+
+</script>
+</body>
+</html>
